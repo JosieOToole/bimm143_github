@@ -1,0 +1,323 @@
+---
+title: "Class 5: Data Visualization with ggplot"
+author: "Josefina O'Toole (PID: A16978557)"
+format: pdf
+---
+
+## Intro to ggplot
+
+There are many graphic systems in R (ways to make plots and figures). These include "base" R plots. Today we will focus mostly on the **ggplot2** package.
+
+Let's start with a plot of a simple in-built dataset called `cars`.
+
+
+```{r}
+head(cars)
+```
+
+```{r}
+plot(cars)
+```
+
+Let's see how we can make this figure using **ggplot**. First I need to install this package on my computer. To install any R package I use the function `install.packages()`.
+
+> I will run `install.packages("ggplot2") in my R console not this quarto document!
+
+Before I can use any functions from add on packages I need to load the package from "library()" with the `library(ggplot2) call.
+
+```{r}
+library(ggplot2)
+ggplot(cars)
+```
+
+All ggplot figures have at least 3 things (called layers). These include:
+
+- **data** (the input dataset I want to plot from),
+- **aes** (the aesthetic mapping of the data to my plot),
+- **geoms** (the geom_point(), geom_line(), etc. that I want to draw).
+
+```{r}
+ggplot(cars) +
+  aes(x=speed, y=dist) +
+  geom_point()
+```
+
+Let's add a line to show the relationship here:
+```{r}
+ggplot(cars) +
+  aes(x=speed, y=dist) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  theme_bw() +
+  labs(title="My first GGPLOT")
+
+```
+
+> For which phases is data visualization important in our scientific workflows?
+
+All of the above
+
+> True or False? The ggplot2 package comes already installed with R?
+
+FALSE
+
+> Which plot types are typically NOT used to compare distributions of numeric variables?
+
+Network graphs
+
+> Which statement about data visualization with ggplot2 is incorrect?
+
+ggplot2 is the only way to create plots in R
+
+> Which geometric layer should be used to create scatter plots in ggplot2? 
+
+geom_point()
+  
+## Gene expression figure
+
+The code to read the dataset
+
+```{r}
+url <- "https://bioboot.github.io/bimm143_S20/class-material/up_down_expression.txt"
+genes <- read.delim(url)
+head(genes)
+```
+
+> How many genes are in this dataset?
+
+```{r}
+nrow(genes)
+```
+
+> How many columns did you find?
+
+```{r}
+colnames(genes)
+ncol(genes)
+```
+
+> Use the table() function on the State column of this data.frame to find out how many ‘up’ regulated genes there are. What is your answer?
+
+```{r}
+table(genes$State)
+```
+
+> Using your values above and 2 significant figures. What fraction of total genes is up-regulated in this dataset?
+
+```{r}
+n.tot <- nrow(genes)
+vals <- table(genes$State)
+
+vals.percent <- vals/n.tot * 100
+round(vals.percent, 2)
+
+```
+
+Polishing our figure:
+
+```{r}
+ggplot(genes) +
+  aes(x=Condition1, y=Condition2, col=State) +
+  geom_point() +
+  theme_bw() +
+  labs(title="Gene Expression Changes Upon Drug Treatment",
+      subtitle="just another scatter plot made with ggplot",
+      caption="BIMM143",
+      x="Control (no drug)",
+      y="Drug Treatment") +
+  scale_colour_manual( values = c("blue", "gray", "red") )
+  
+```
+
+# Automated Quarto information:
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+Something **else** here
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+plot(1:10)
+```
+
+You can add options to executable code like this 
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+# 7. Going Further
+
+Using the gapminder and dplyr packages:
+
+```{r}
+# File location online
+url <- "https://raw.githubusercontent.com/jennybc/gapminder/master/inst/extdata/gapminder.tsv"
+
+gapminder <- read.delim(url)
+
+
+# install.packages("dplyr")  ## un-comment to install if needed
+library(dplyr)
+
+gapminder_2007 <- gapminder %>% filter(year==2007)
+
+ggplot(gapminder_2007) +
+  aes(x=gdpPercap, y=lifeExp) +
+  geom_point(alpha=0.4)
+```
+
+Adding more variables to aes():
+
+```{r}
+ggplot(gapminder_2007) +
+  aes(x=gdpPercap, y=lifeExp, color=continent, size=pop) +
+  geom_point(alpha=0.5)
+```
+
+Coloring the points by the numeric variable population (pop):
+
+```{r}
+ggplot(gapminder_2007) + 
+  aes(x=gdpPercap, y=lifeExp, color=pop) +
+  geom_point(alpha=0.8)
+```
+
+Adjusting point size:
+
+```{r}
+ggplot(gapminder_2007) + 
+  aes(x=gdpPercap, y=lifeExp, size=pop) +
+  geom_point(alpha=0.5)
+```
+
+Scaling the point size information:
+
+```{r}
+ggplot(gapminder_2007) + 
+  geom_point(aes(x=gdpPercap, y=lifeExp,
+                 size=pop), alpha=0.5) + 
+  scale_size_area(max_size=10)
+```
+
+Can you adapt the code you have learned thus far to reproduce our gapminder scatter plot for the year 1957? What do you notice about this plot is it easy to compare with the one for 2007?
+
+```{r}
+gapminder_1957 <- gapminder %>% filter(year==1957)
+
+ggplot(gapminder_1957) +
+  geom_point(alpha=0.7) +
+  aes(x=gdpPercap, y=lifeExp, col=continent, size=pop) +
+  scale_size_area(max_size=15)
+
+```
+  This plot is not easy to compare because the graphs are not positioned next to each other.
+
+
+Do the same steps above but include 1957 and 2007 in your input dataset for ggplot(). You should now include the layer facet_wrap(~year) to produce the following plot:
+
+```{r}
+gapminder_1957 <- gapminder %>% filter(year==1957 | year==2007)
+
+ggplot(gapminder_1957) +
+  geom_point(alpha=0.7) +
+  aes(x=gdpPercap, y=lifeExp, col=continent, size=pop) +
+  scale_size_area(max_size=10) +
+  facet_wrap(~year)
+
+```
+
+## Introduction to bar charts
+
+```{r}
+gapminder_top5 <- gapminder %>% 
+  filter(year==2007) %>% 
+  arrange(desc(pop)) %>% 
+  top_n(5, pop)
+
+gapminder_top5
+
+ggplot(gapminder_top5) + 
+  geom_col(aes(x=country, y=pop))
+```
+
+Create a bar chart showing the life expectancy of the five biggest countries by population in 2007.
+
+```{r}
+gapminder_top5 <- gapminder %>% 
+  filter(year==2007) %>% 
+  arrange(desc(pop)) %>% 
+  top_n(5, pop)
+
+gapminder_top5
+
+ggplot(gapminder_top5) + 
+  geom_col(aes(x=country, y=lifeExp))
+```
+## Filling bars with color
+
+```{r}
+ggplot(gapminder_top5) + 
+  geom_col(aes(x=country, y=pop, fill=continent))
+```
+Using a numeric variable:
+```{r}
+ggplot(gapminder_top5) + 
+  geom_col(aes(x=country, y=pop, fill=lifeExp))
+```
+
+Plot population size by country. Create a bar chart showing the population (in millions) of the five biggest countries by population in 2007.
+
+```{r}
+ggplot(gapminder_top5) + 
+  geom_col(aes(x=country, y=pop, fill=gdpPercap))
+```
+Re-order bars:
+
+```{r}
+ggplot(gapminder_top5) +
+  aes(x=reorder(country, -pop), y=pop, fill=gdpPercap) +
+  geom_col()
+```
+Fill by country:
+```{r}
+ggplot(gapminder_top5) +
+  aes(x=reorder(country, -pop), y=pop, fill=country) +
+  geom_col(col="gray30") +
+  guides(fill="none")
+```
+
+## Flipping bar charts
+
+```{r}
+head(USArrests)
+```
+```{r}
+USArrests$State <- rownames(USArrests)
+ggplot(USArrests) +
+  aes(x=reorder(State,Murder), y=Murder) +
+  geom_col() +
+  coord_flip()
+```
+
+Combining geom_point() & geom_segment():
+
+```{r}
+ggplot(USArrests) +
+  aes(x=reorder(State,Murder), y=Murder) +
+  geom_point() +
+  geom_segment(aes(x=State, 
+                   xend=State, 
+                   y=0, 
+                   yend=Murder), color="blue") +
+  coord_flip()
+```
+

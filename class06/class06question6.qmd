@@ -1,0 +1,64 @@
+---
+title: "Class 6 Quesetion 6"
+author: "Josefina O'Toole (PID: A16978557)"
+format: pdf
+---
+
+> Q6. Write a function: See Q6 of the hands-on lab supplement above. This entails turning a supplied code snippet into a more robust and re-usable function that will take any of the three listed input proteins and plot the effect of drug binding. Note assessment rubric and submission instructions within document.
+
+# Can you improve this analysis code?
+```{r}
+library(bio3d)
+
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s3, chain="A", elety="CA")
+
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+
+```
+
+There was a bug so I changed s1 to s3.
+
+Shorted code:
+
+```{r}
+library(bio3d)
+
+functionQ6 <- function(protein) {
+  
+  ad <- read.pdb(protein) # this line reads the protein pdb file
+  # ad stands for any database
+  
+  ad.chainA <- trim.pdb(ad, chain="A", elety="CA") # this line takes the chainA
+  # from the database and trims it to a smaller subset of atoms
+  
+  ad.b <- ad.chainA$atom$b # this line assigns the ad.chainA from above 
+  # that have the b column to a new variable called ad.b
+  
+  plotb3(ad.b, sse=ad.chainA, typ="l", ylab="Bfactor") # this line plots the 
+  # numbers in the ad.b vector
+}
+
+# the input of the function is a pdb file of a specific protein
+functionQ6("4AKE")
+functionQ6("1AKE")
+functionQ6("1E4Y")
+# the output is a standard scatter plot with a line, of the chainA & b category
+# of the protein with Beta factor on the y-axis and the residues of the protein
+# on the x-axis.
+
+```
+
+
+
