@@ -1,0 +1,134 @@
+---
+title: "class11.2"
+author: "Josefina O'Toole (PID: A16978557)"
+format: pdf
+---
+
+
+Here we analyze our AlphaFold structure prediction models. The input directory/folder comes from the ColabFold server:
+
+```{r}
+# Change this for YOUR results dir name
+results_dir <- "FindAGene_e2383"
+```
+
+```{r}
+# File names for all PDB models
+pdb_files <- list.files(path=results_dir,
+                        pattern="*.pdb",
+                        full.names = TRUE)
+
+# Print our PDB file names
+basename(pdb_files)
+```
+
+I will use the Bio3D package for analysis
+
+```{r}
+library(bio3d)
+```
+
+Align and Superpose
+
+```{r}
+# Read all data from Models 
+#  and superpose/fit coords
+pdbs <- pdbaln(pdb_files, fit=TRUE, exefile="msa")
+pdbs
+```
+
+## RMSD
+
+```{r}
+rd <- rmsd(pdbs, fit=T)
+range(rd)
+
+```
+
+```{r}
+library(pheatmap)
+
+colnames(rd) <- paste0("m",1:5)
+rownames(rd) <- paste0("m",1:5)
+pheatmap(rd)
+```
+
+
+
+## Trying to make a heatmap from MSA results
+
+```{r}
+aln <- read.fasta("muscle-I20250307-011626-0698-37357644-p1m.fa", to.upper = TRUE)
+```
+
+##Sequence identity matrix??
+
+```{r}
+seqaln(aln, id=NULL, profile=NULL, exefile="msa", outfile="aln.fa", 
+       protein=TRUE, seqgroup=FALSE, refine=FALSE, extra.args="",
+       verbose=FALSE, web.args = list())
+```
+
+```{r}
+library(pheatmap)
+
+
+??pheatmap
+```
+
+
+
+Experimenting:
+
+```{r}
+dim(aln$ali)
+```
+
+```{r}
+sim <- conserv(aln)
+```
+
+```{r}
+con <- consensus(aln, cutoff = 0.9)
+con$seq
+```
+
+
+## CODE for HEATMAP
+
+```{r}
+install.packages("bio3d")
+install.packages("pheatmap")
+```
+
+```{r}
+library(bio3d)
+library(pheatmap)
+```
+
+
+```{r}
+library(bio3d)
+
+alignment <- read.fasta("muscle-I20250309-231253-0724-77324989-p1m.fa")
+identity_matrix <- seqidentity(alignment)
+```
+
+```{r}
+library(pheatmap)
+pheatmap(identity_matrix,
+         color = colorRampPalette(c("red", "yellow", "orange"))(50)
+)
+```
+
+```{r}
+png("find_a_gene_heatmap.png", width = 800, height = 600)
+pheatmap(identity_matrix,
+         color = colorRampPalette(c("red", "yellow", "orange"))(50),
+         main = "Find a Gene Heatmap"
+         )
+dev.off()
+```
+
+
+
