@@ -1,0 +1,43 @@
+---
+title: "Class 19"
+format: html
+---
+
+```{r}
+library(bio3d)
+
+s <- read.fasta("A16978557_mutant_seq.fa")
+s
+```
+
+score conservation per position
+```{r}
+score <- conserv(s)
+score
+```
+
+```{r}
+positions <- which(score != 1)
+positions
+```
+
+```{r}
+residues <- s$ali[,positions]
+```
+
+```{r}
+paste(residues[,1], positions, residues[,2], sep="")
+```
+
+
+The sites where amino acids/residues differr are the cancer specific mutations.
+
+
+```{r, warning=FALSE}
+cif.file <- "107f9050118b41c1.cif"
+x <- read.cif(cif.file)
+write.pdb(x, file="AF_model.pdb")
+```
+
+
+
