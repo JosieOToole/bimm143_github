@@ -4,7 +4,7 @@ My classwork from W25 BIMM143 [BIMM143](https://bioboot.github.io/bimm143_W25/) 
 
 - class04 [Introduction to R]()
   
-- class05 [Data viz with ggplot]()
+- class05 [Data viz with ggplot](https://github.com/JosieOToole/bimm143_github/blob/main/class05/class05.pdf)
 
 - class06 [R functions]()
 
